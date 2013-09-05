@@ -430,15 +430,8 @@ class BP_Docs_Query {
 		if ( empty( $_POST['doc']['title'] ) ) {
 			// The title field is required
 			$result['message'] = __( 'The title field is required.', 'bp-docs' );
-			//Redirect user to correct form, "edit" or "create." ($this->current_view was used to do this, but appears to be undefined.) It looks like edited docs have a doc_slug, while new docs do not. 
-			//The user loses his most recent work in either case! Maybe need to repopulate form with $_POST data, if it exists?
-			if ( !empty( $this->doc_slug ) ) {
-				$result['redirect'] = 'edit';
-			} else {
-				$result['redirect'] = 'create';
-			}
+			$result['redirect'] = ! empty( $this->doc_slug ) ? 'edit' : 'create';
 		} else {
-			// If the title is filled in, we can proceed
 			$defaults = array(
 				'post_type'    => $this->post_type_name,
 				'post_title'   => $_POST['doc']['title'],
@@ -560,7 +553,7 @@ class BP_Docs_Query {
 
 		$message_type = $result['redirect'] == 'single' ? 'success' : 'error';
 
-		$redirect_url = trailingslashit( bp_get_root_domain() . '/' . BP_DOCS_SLUG );
+		$redirect_url = trailingslashit( bp_get_root_domain() . '/' . bp_docs_get_docs_slug() );
 
 		if ( $result['redirect'] == 'single' ) {
 			$redirect_url .= $this->doc_slug;

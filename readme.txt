@@ -78,6 +78,10 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 * Fix bug that prevented attachment uploads on group Doc creation pages
 
+* Fix some textdomain errors
+
+* Allow Docs with empty content field
+
 
 
 = 1.4.5 =
