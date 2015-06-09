@@ -435,8 +435,15 @@ function bp_docs_get_tag_link( $args = array() ) {
 	$r = wp_parse_args( $args, $defaults );
 	extract( $r, EXTR_SKIP );
 
-	if ( bp_is_user() || bp_is_group() ) {
-		$item_docs_url = $_SERVER['REQUEST_URI'];
+	if ( bp_is_user() ) {
+		$current_action = bp_current_action();
+		if ( empty( $current_action ) || BP_DOCS_STARTED_SLUG == $current_action ) {
+			$item_docs_url = trailingslashit( bp_displayed_user_domain() . bp_docs_get_docs_slug() .  '/' . BP_DOCS_STARTED_SLUG );
+		} elseif ( BP_DOCS_EDITED_SLUG == $current_action ) {
+			$item_docs_url = trailingslashit( bp_displayed_user_domain() . bp_docs_get_docs_slug() .  '/' . BP_DOCS_EDITED_SLUG );
+		}
+	} elseif ( bp_is_group() ){
+		$item_docs_url = trailingslashit( bp_get_group_permalink() . bp_docs_get_docs_slug() );
 	} else {
 		$item_docs_url = bp_docs_get_archive_link();
 	}
