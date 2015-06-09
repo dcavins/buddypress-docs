@@ -238,9 +238,9 @@ class BP_Docs_Users_Integration {
 		if ( bp_is_user() ) {
 			$current_action = bp_current_action();
 			if ( $current_action == BP_DOCS_STARTED_SLUG ) {
-				$base_url = user_trailingslashit( bp_docs_get_mydocs_started_link() . $wp_rewrite_pag_base . '/%#%/' );
+				$base_url = user_trailingslashit( trailingslashit( bp_displayed_user_domain() . bp_docs_get_docs_slug() .  '/' . BP_DOCS_STARTED_SLUG ) . $wp_rewrite_pag_base . '/%#%/' );
 			} elseif ( $current_action == BP_DOCS_EDITED_SLUG ) {
-				$base_url = user_trailingslashit( bp_docs_get_mydocs_edited_link() . $wp_rewrite_pag_base . '/%#%/' );
+				$base_url = user_trailingslashit( trailingslashit( bp_displayed_user_domain() . bp_docs_get_docs_slug() .  '/' . BP_DOCS_EDITED_SLUG )  . $wp_rewrite_pag_base . '/%#%/' );
 			}
 		}
 		return $base_url;
