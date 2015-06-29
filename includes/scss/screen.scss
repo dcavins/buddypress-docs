@@ -415,6 +415,8 @@ body.js .bp-docs-attachment-drawer {
 
 	& > ul {
 		list-style-type: none;
+		margin-left: 0;
+		margin-bottom: 0;
 	}
 
 	& > ul > li {
@@ -832,11 +834,7 @@ h2.directory-title {
 h3.doc-title {
 	font-size: 1.3em;
 	font-weight: normal;
-	margin: 0 0 0 -21px;
-
-	i {
-		margin-right: 6px;
-	}
+	margin: 0 0 0 -28px;
 }
 
 .doc-excerpt p {
@@ -1057,13 +1055,13 @@ div.toggle-folders-link {
  * All Genericons
  */
 
-.genericon {
+.bp-docs .genericon {
 	display: inline-block;
-	width: 16px;
-	height: 16px;
+	width: 28px;
+	height: 28px;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
-	font-size: 16px;
+	font-size: 28px;
 	line-height: 1;
 	font-family: 'Genericons';
 	text-decoration: inherit;
@@ -1076,7 +1074,7 @@ div.toggle-folders-link {
  * IE7 and IE6 hacks
  */
 
-.genericon {
+.bp-docs .genericon {
 	*overflow: auto;
 	*zoom: 1;
 	*display: inline;
