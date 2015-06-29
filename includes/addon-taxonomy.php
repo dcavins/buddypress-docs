@@ -291,7 +291,7 @@ class BP_Docs_Taxonomy {
 		?>
 
 		<td class="tags-cell">
-			<?php echo implode( ', ', $tagtext ) ?>
+			<?php echo apply_filters( 'bp_docs_taxonomy_tags_td_content', implode( ', ', $tagtext ), $tagtext ); ?>
 		</td>
 
 		<?php
