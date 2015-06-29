@@ -309,7 +309,8 @@ function bp_docs_the_breadcrumb( $args = array() ) {
 
 		if ( $r['include_doc'] ) {
 			$crumbs[] = sprintf(
-				'<span class="breadcrumb-current"><i class="genericon genericon-document"></i>%s</span>',
+				'<span class="breadcrumb-current">%s%s</span>',
+				bp_docs_get_genericon( 'document' ),
 				$doc->post_title
 			);
 		}
@@ -2263,3 +2264,20 @@ function bp_docs_toggleable_open_or_closed_class() {
 		echo 'toggle-closed';
 	}
 }
+
+/**
+ * Output a genericon-compatible <i> element for displaying icons.
+ *
+ * @since 1.9
+ * @param string $glyph_name The genericon id of the icon.
+ */
+function bp_docs_genericon( $glyph_name ) {
+	echo bp_docs_get_genericon( $glyph_name );
+}
+	function bp_docs_get_genericon( $glyph_name ) {
+		if ( empty( $glyph_name ) ) {
+			$glyph_name = 'document';
+		}
+		$icon_markup = '<i class="genericon genericon-' . $glyph_name . '"></i>';
+		return apply_filters( 'bp_docs_get_genericon', $icon_markup, $glyph_name );
+	}

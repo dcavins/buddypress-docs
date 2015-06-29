@@ -72,7 +72,7 @@
 				<?php endif ?>
 
 				<h3 class="doc-title">
-					<i class="genericon genericon-document"></i><a href="<?php bp_docs_doc_link() ?>"><?php the_title() ?></a> <?php bp_docs_doc_trash_notice(); ?>
+					<?php bp_docs_genericon( 'document' ); ?><a href="<?php bp_docs_doc_link() ?>"><?php the_title() ?></a> <?php bp_docs_doc_trash_notice(); ?>
 				</h3>
 
 				<?php if ( bp_docs_get_excerpt_length() ) : ?>
