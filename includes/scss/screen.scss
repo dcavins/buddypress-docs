@@ -843,6 +843,10 @@ h3.doc-title {
 	margin-bottom: .5em;
 }
 
+.doc-author-meta {
+	display: inline-block;
+}
+
 .doc-created-meta, .doc-modified-meta, .doc-tags {
 	font-size: .9em;
 	color: $grey_text;
@@ -851,6 +855,15 @@ h3.doc-title {
 .directory-breadcrumb-separator {
 	padding: 0 4px 0 6px;
 	opacity: .5;
+}
+
+.attachment-clip-container {
+	width: 24px;
+	margin-left: -28px;
+	display: inline-block;
+	.bp-docs-attachment-clip {
+	    display: inline-block;
+	}
 }
 
 /* Comment section */

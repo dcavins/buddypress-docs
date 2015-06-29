@@ -2172,7 +2172,7 @@ function bp_docs_attachment_icon() {
 
 	// $pc = plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/images/paperclip.png' );
 
-	$html = '<a class="bp-docs-attachment-clip paperclip-jaunty" id="bp-docs-attachment-clip-' . get_the_ID() . '"></a>';
+	$html = '<a class="bp-docs-attachment-clip" id="bp-docs-attachment-clip-' . get_the_ID() . '">' . bp_docs_get_genericon( 'attachment' ) . '</a>';
 
 	echo $html;
 }

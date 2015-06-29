@@ -65,11 +65,6 @@
 		<?php $has_docs = true ?>
 		<?php while ( bp_docs_has_docs() ) : bp_docs_the_doc() ?>
 			<div <?php bp_docs_doc_row_classes( get_the_ID() ); ?>>
-				<?php if ( bp_docs_enable_attachments() ) : ?>
-					<div class="attachment-clip-cell">
-						<?php bp_docs_attachment_icon() ?>
-					</div>
-				<?php endif ?>
 
 				<h3 class="doc-title">
 					<?php bp_docs_genericon( 'document' ); ?><a href="<?php bp_docs_doc_link() ?>"><?php the_title() ?></a> <?php bp_docs_doc_trash_notice(); ?>
@@ -82,6 +77,12 @@
 				<?php endif ?>
 
 				<?php do_action( 'bp_docs_loop_after_doc_excerpt' ) ?>
+
+				<?php if ( bp_docs_enable_attachments() ) : ?>
+					<div class="attachment-clip-container">
+						<?php bp_docs_attachment_icon() ?>
+					</div>
+				<?php endif; ?>
 
 				<div class="doc-author-meta">
 					<span class="doc-created-meta">
