@@ -6,9 +6,12 @@
 	<?php bp_locate_template( 'docs/manage-folders.php', true ) ?>
 <?php else : ?>
 
-	<h2 class="directory-title">
-		<?php bp_docs_directory_breadcrumb() ?>
-	</h2>
+	<?php $breadcrumb_markup = bp_docs_get_directory_breadcrumb() ?>
+	<?php if ( strip_tags( $breadcrumb_markup ) ) : ?>
+		<h2 class="directory-title">
+			<?php echo $breadcrumb_markup ?>
+		</h2>
+	<?php endif; ?>
 
 	<div class="docs-info-header">
 		<?php bp_docs_info_header() ?>
@@ -21,132 +24,101 @@
 					<a href="<?php bp_docs_manage_folders_url() ?>"><?php _e( 'Manage Folders', 'bp-docs' ) ?></a>
 				</div>
 			<?php endif ?>
-
-			<div class="toggle-folders-link hide-if-no-js">
-				<a href="#" class="toggle-folders" id="toggle-folders-hide"><?php _e( 'Hide Folders', 'bp-docs' ) ?></a>
-				<a href="#" class="toggle-folders" id="toggle-folders-show"><?php _e( 'Show Folders', 'bp-docs' ) ?></a>
-			</div>
 		</div>
 	<?php endif; ?>
 
-	<table class="doctable">
-
-	<thead>
-		<tr valign="bottom">
-			<?php if ( bp_docs_enable_attachments() ) : ?>
-				<th scope="column" class="attachment-clip-cell"> </th>
-			<?php endif ?>
-
-			<th scope="column" class="title-cell<?php bp_docs_is_current_orderby_class( 'title' ) ?>">
-				<a href="<?php bp_docs_order_by_link( 'title' ) ?>"><?php _e( 'Title', 'bp-docs' ); ?></a>
-			</th>
-
-			<?php if ( ! bp_docs_is_started_by() ) : ?>
-				<th scope="column" class="author-cell<?php bp_docs_is_current_orderby_class( 'author' ) ?>">
-					<a href="<?php bp_docs_order_by_link( 'author' ) ?>"><?php _e( 'Author', 'bp-docs' ); ?></a>
-				</th>
-			<?php endif; ?>
-
-			<th scope="column" class="created-date-cell<?php bp_docs_is_current_orderby_class( 'created' ) ?>">
-				<a href="<?php bp_docs_order_by_link( 'created' ) ?>"><?php _e( 'Created', 'bp-docs' ); ?></a>
-			</th>
-
-			<th scope="column" class="edited-date-cell<?php bp_docs_is_current_orderby_class( 'modified' ) ?>">
-				<a href="<?php bp_docs_order_by_link( 'modified' ) ?>"><?php _e( 'Last Edited', 'bp-docs' ); ?></a>
-			</th>
-
-			<?php do_action( 'bp_docs_loop_additional_th' ) ?>
-		</tr>
-        </thead>
-
-        <tbody>
+	<div class="docs-list">
 
 	<?php if ( bp_docs_enable_folders_for_current_context() ) : ?>
 		<?php /* The '..' row */ ?>
 		<?php if ( ! empty( $_GET['folder'] ) ) : ?>
-			<tr class="folder-row">
-				<?php /* Just to keep things even */ ?>
-				<?php if ( bp_docs_enable_attachments() ) : ?>
-					<td class="attachment-clip-cell">
-						<?php bp_docs_attachment_icon() ?>
-					</td>
-				<?php endif ?>
-
-				<td colspan=10>
-					<i class="genericon genericon-category"></i><a href="<?php echo esc_url( bp_docs_get_parent_folder_url() ) ?>"><?php _ex( '..', 'up one folder', 'bp-docs' ) ?></a>
-				</td>
-			</tr>
+			<div class="folder-row">
+				<i class="genericon genericon-category"></i><a href="<?php echo esc_url( bp_docs_get_parent_folder_url() ) ?>"><?php _ex( '..', 'up one folder', 'bp-docs' ) ?></a>
+			</div>
 		<?php endif ?>
 
 		<?php if ( ! isset( $_GET['bpd_tag'] ) ) : ?>
-			<?php foreach ( bp_docs_get_folders() as $folder ) : ?>
-				<tr class="folder-row">
-					<?php /* Just to keep things even */ ?>
-					<?php if ( bp_docs_enable_attachments() ) : ?>
-						<td class="attachment-clip-cell">
-							<?php bp_docs_attachment_icon() ?>
-						</td>
-					<?php endif ?>
+			<?php if ( $folders = bp_docs_get_folders() ) : ?>
+				<div>
+					<h3 class="docs-list-section-header docs-list-section-header-folders">
+						<?php _e( 'Folders', 'bp-docs' ) ?>
+					</h3>
 
-					<td colspan=10>
+					<span class="toggle-folders-link hide-if-no-js">
+						<a href="#" class="toggle-folders" id="toggle-folders-hide"><?php _e( 'Hide', 'bp-docs' ) ?></a>
+						<a href="#" class="toggle-folders" id="toggle-folders-show"><?php _e( 'Show', 'bp-docs' ) ?></a>
+					</span>
+				</div>
+
+				<?php foreach ( $folders as $folder ) : ?>
+					<div class="folder-row">
 						<i class="genericon genericon-category"></i><a href="<?php echo esc_url( bp_docs_get_folder_url( $folder->ID ) ) ?>"><?php echo esc_html( $folder->post_title ) ?></a>
-					</td>
-				</tr>
-			<?php endforeach ?>
+					</div>
+				<?php endforeach ?>
+			<?php endif; ?>
 		<?php endif; ?>
 	<?php endif; /* bp_docs_enable_folders_for_current_context() */ ?>
 
 	<?php $has_docs = false ?>
 	<?php if ( bp_docs_has_docs() ) : ?>
+		<h3 class="docs-list-section-header docs-list-section-header-docs"><?php _e( 'Docs', 'bp-docs' ) ?></h3>
 		<?php $has_docs = true ?>
 		<?php while ( bp_docs_has_docs() ) : bp_docs_the_doc() ?>
-			<tr<?php bp_docs_doc_row_classes(); ?>>
+			<div <?php bp_docs_doc_row_classes( get_the_ID() ); ?>>
 				<?php if ( bp_docs_enable_attachments() ) : ?>
-					<td class="attachment-clip-cell">
+					<div class="attachment-clip-cell">
 						<?php bp_docs_attachment_icon() ?>
-					</td>
+					</div>
 				<?php endif ?>
 
-				<td class="title-cell">
+				<h3 class="doc-title">
 					<i class="genericon genericon-document"></i><a href="<?php bp_docs_doc_link() ?>"><?php the_title() ?></a> <?php bp_docs_doc_trash_notice(); ?>
+				</h3>
 
-					<?php if ( bp_docs_get_excerpt_length() ) : ?>
-						<div class="doc-excerpt">
-							<?php the_excerpt() ?>
-						</div>
-					<?php endif ?>
-
-					<?php do_action( 'bp_docs_loop_after_doc_excerpt' ) ?>
-
-					<div class="row-actions">
-						<?php bp_docs_doc_action_links() ?>
+				<?php if ( bp_docs_get_excerpt_length() ) : ?>
+					<div class="doc-excerpt">
+						<?php the_excerpt() ?>
 					</div>
+				<?php endif ?>
 
-					<div class="bp-docs-attachment-drawer" id="bp-docs-attachment-drawer-<?php echo get_the_ID() ?>">
-						<?php bp_docs_doc_attachment_drawer() ?>
-					</div>
-				</td>
+				<?php do_action( 'bp_docs_loop_after_doc_excerpt' ) ?>
 
-				<?php if ( ! bp_docs_is_started_by() ) : ?>
-					<td class="author-cell">
-						<a href="<?php echo bp_core_get_user_domain( get_the_author_meta( 'ID' ) ) ?>" title="<?php echo bp_core_get_user_displayname( get_the_author_meta( 'ID' ) ) ?>"><?php echo bp_core_get_user_displayname( get_the_author_meta( 'ID' ) ) ?></a>
-					</td>
-				<?php endif; ?>
+				<div class="doc-author-meta">
+					<span class="doc-created-meta">
+						<?php $author_id = get_the_author_meta( 'ID' );
+						      printf(
+							  __( 'Created %s by %s', 'bp-docs' ),
+							  get_the_date(),
+							  sprintf( '<a href="%s" title="%s">%s</a>', esc_url( bp_core_get_user_domain( $author_id ) ), esc_html( bp_core_get_user_displayname( $author_id ) ), esc_html( bp_core_get_user_displayname( $author_id ) ) )
+						      ); ?>
+					</span>
 
-				<td class="date-cell created-date-cell">
-					<?php echo get_the_date() ?>
-				</td>
+					<?php $modified_id = get_post_meta( get_the_ID(), 'bp_docs_last_editor', true ) ?>
+					<?php if ( $modified_id && get_the_date( 'U' ) !== get_the_modified_date( 'U' ) ) : ?>
+						<span class="doc-modified-meta">
+							<?php printf(
+								  ' &middot; ' . __( 'Edited %s by %s', 'bp-docs' ),
+								  get_the_modified_date(),
+								  sprintf( '<a href="%s" title="%s">%s</a>', esc_url( bp_core_get_user_domain( $modified_id ) ), esc_html( bp_core_get_user_displayname( $modified_id ) ), esc_html( bp_core_get_user_displayname( $modified_id ) ) )
+							      ); ?>
+						</span>
+					<?php endif; ?>
+				</div><!-- .doc-author-meta -->
 
-				<td class="date-cell edited-date-cell">
-					<?php echo get_the_modified_date() ?>
-				</td>
+				<?php do_action( 'bp_docs_loop_after_doc_meta', get_the_ID() ) ?>
 
-				<?php do_action( 'bp_docs_loop_additional_td' ) ?>
-			</tr>
+				<div class="row-actions">
+					<?php bp_docs_doc_action_links() ?>
+				</div>
+
+				<div class="bp-docs-attachment-drawer" id="bp-docs-attachment-drawer-<?php echo get_the_ID() ?>">
+					<?php bp_docs_doc_attachment_drawer() ?>
+				</div>
+			</div>
 		<?php endwhile ?>
 	<?php endif ?>
-	</tbody>
-	</table>
+
+	</div><!-- #docs-list -->
 
 	<?php if ( $has_docs ) : ?>
 		<div id="bp-docs-pagination">
