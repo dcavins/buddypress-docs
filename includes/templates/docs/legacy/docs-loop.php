@@ -73,7 +73,7 @@
 				<?php endif ?>
 
 				<td colspan=10>
-					<i class="genericon genericon-category"></i><a href="<?php echo esc_url( bp_docs_get_parent_folder_url() ) ?>"><?php _ex( '..', 'up one folder', 'bp-docs' ) ?></a>
+					<?php bp_docs_genericon( 'category', intval( $_GET['folder'] ) ); ?><a href="<?php echo esc_url( bp_docs_get_parent_folder_url() ) ?>"><?php _ex( '..', 'up one folder', 'bp-docs' ) ?></a>
 				</td>
 			</tr>
 		<?php endif ?>
@@ -89,7 +89,7 @@
 					<?php endif ?>
 
 					<td colspan=10>
-						<i class="genericon genericon-category"></i><a href="<?php echo esc_url( bp_docs_get_folder_url( $folder->ID ) ) ?>"><?php echo esc_html( $folder->post_title ) ?></a>
+						<?php bp_docs_genericon( 'category', $folder->ID  ); ?><a href="<?php echo esc_url( bp_docs_get_folder_url( $folder->ID ) ) ?>"><?php echo esc_html( $folder->post_title ) ?></a>
 					</td>
 				</tr>
 			<?php endforeach ?>
@@ -108,7 +108,7 @@
 				<?php endif ?>
 
 				<td class="title-cell">
-					<i class="genericon genericon-document"></i><a href="<?php bp_docs_doc_link() ?>"><?php the_title() ?></a> <?php bp_docs_doc_trash_notice(); ?>
+					<?php bp_docs_genericon( 'document', get_the_ID() ); ?><a href="<?php bp_docs_doc_link() ?>"><?php the_title() ?></a> <?php bp_docs_doc_trash_notice(); ?>
 
 					<?php if ( bp_docs_get_excerpt_length() ) : ?>
 						<div class="doc-excerpt">

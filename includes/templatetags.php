@@ -2270,14 +2270,16 @@ function bp_docs_toggleable_open_or_closed_class() {
  *
  * @since 1.9
  * @param string $glyph_name The genericon id of the icon.
+ * @param string $object_id The ID of the object we're genericoning.
+ * @return string HTML describing icon.
  */
-function bp_docs_genericon( $glyph_name ) {
-	echo bp_docs_get_genericon( $glyph_name );
+function bp_docs_genericon( $glyph_name, $object_id ) {
+	echo bp_docs_get_genericon( $glyph_name, $object_id );
 }
-	function bp_docs_get_genericon( $glyph_name ) {
+	function bp_docs_get_genericon( $glyph_name, $object_id ) {
 		if ( empty( $glyph_name ) ) {
 			$glyph_name = 'document';
 		}
 		$icon_markup = '<i class="genericon genericon-' . $glyph_name . '"></i>';
-		return apply_filters( 'bp_docs_get_genericon', $icon_markup, $glyph_name );
+		return apply_filters( 'bp_docs_get_genericon', $icon_markup, $glyph_name, $object_id );
 	}

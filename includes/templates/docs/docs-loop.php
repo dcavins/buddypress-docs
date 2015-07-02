@@ -33,7 +33,7 @@
 		<?php /* The '..' row */ ?>
 		<?php if ( ! empty( $_GET['folder'] ) ) : ?>
 			<div class="folder-row">
-				<i class="genericon genericon-category"></i><a href="<?php echo esc_url( bp_docs_get_parent_folder_url() ) ?>"><?php _ex( '..', 'up one folder', 'bp-docs' ) ?></a>
+				<?php bp_docs_genericon( 'category', intval( $_GET['folder'] ) ); ?><a href="<?php echo esc_url( bp_docs_get_parent_folder_url() ) ?>"><?php _ex( '..', 'up one folder', 'bp-docs' ) ?></a>
 			</div>
 		<?php endif ?>
 
@@ -52,7 +52,7 @@
 
 				<?php foreach ( $folders as $folder ) : ?>
 					<div class="folder-row">
-						<i class="genericon genericon-category"></i><a href="<?php echo esc_url( bp_docs_get_folder_url( $folder->ID ) ) ?>"><?php echo esc_html( $folder->post_title ) ?></a>
+						<?php bp_docs_genericon( 'category', $folder->ID ); ?><a href="<?php echo esc_url( bp_docs_get_folder_url( $folder->ID ) ) ?>"><?php echo esc_html( $folder->post_title ) ?></a>
 					</div>
 				<?php endforeach ?>
 			<?php endif; ?>
@@ -67,7 +67,7 @@
 			<div <?php bp_docs_doc_row_classes( get_the_ID() ); ?>>
 
 				<h3 class="doc-title">
-					<?php bp_docs_genericon( 'document' ); ?><a href="<?php bp_docs_doc_link() ?>"><?php the_title() ?></a> <?php bp_docs_doc_trash_notice(); ?>
+					<?php bp_docs_genericon( 'document', get_the_ID() ); ?><a href="<?php bp_docs_doc_link() ?>"><?php the_title() ?></a> <?php bp_docs_doc_trash_notice(); ?>
 				</h3>
 
 				<?php if ( bp_docs_get_excerpt_length() ) : ?>
