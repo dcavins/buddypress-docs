@@ -1218,6 +1218,14 @@ div.toggle-folders-link {
 .genericon-downarrow:before {       content: '\f502'; }
 .genericon-leftarrow:before {       content: '\f503'; }
 
+/* Use for text meant only for screen readers */
+.screen-reader-text {
+	clip: rect(1px, 1px, 1px, 1px);
+	height: 1px;
+	overflow: hidden;
+	position: absolute !important;
+	width: 1px;
+}
 
 
 
