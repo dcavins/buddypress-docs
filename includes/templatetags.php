@@ -310,7 +310,7 @@ function bp_docs_the_breadcrumb( $args = array() ) {
 		if ( $r['include_doc'] ) {
 			$crumbs[] = sprintf(
 				'<span class="breadcrumb-current">%s%s</span>',
-				bp_docs_get_genericon( 'document' ),
+				bp_docs_get_genericon( 'document', $doc->ID ),
 				$doc->post_title
 			);
 		}
@@ -2164,7 +2164,8 @@ function bp_docs_doc_has_attachments( $doc_id = null ) {
  * @since 1.4
  */
 function bp_docs_attachment_icon() {
-	$atts = bp_docs_get_doc_attachments( get_the_ID() );
+	$doc_id = get_the_ID();
+	$atts = bp_docs_get_doc_attachments( $doc_id );
 
 	if ( empty( $atts ) ) {
 		return;
@@ -2172,7 +2173,7 @@ function bp_docs_attachment_icon() {
 
 	// $pc = plugins_url( BP_DOCS_PLUGIN_SLUG . '/includes/images/paperclip.png' );
 
-	$html = '<a class="bp-docs-attachment-clip" id="bp-docs-attachment-clip-' . get_the_ID() . '">' . bp_docs_get_genericon( 'attachment' ) . '</a>';
+	$html = '<a class="bp-docs-attachment-clip" id="bp-docs-attachment-clip-' . get_the_ID() . '">' . bp_docs_get_genericon( 'attachment', $doc_id ) . '</a>';
 
 	echo $html;
 }
