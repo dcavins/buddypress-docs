@@ -2281,6 +2281,9 @@ function bp_docs_genericon( $glyph_name, $object_id ) {
 		if ( empty( $glyph_name ) ) {
 			$glyph_name = 'document';
 		}
+		if ( empty( $object_id ) ) {
+			$object_id = get_the_ID();
+		}
 		$icon_markup = '<i class="genericon genericon-' . $glyph_name . '"></i>';
 		return apply_filters( 'bp_docs_get_genericon', $icon_markup, $glyph_name, $object_id );
 	}
