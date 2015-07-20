@@ -99,8 +99,11 @@
 	<?php $has_docs = false ?>
 	<?php if ( bp_docs_has_docs() ) : ?>
 		<?php $has_docs = true ?>
-		<?php while ( bp_docs_has_docs() ) : bp_docs_the_doc() ?>
-			<tr<?php bp_docs_doc_row_classes(); ?>>
+		<?php while ( bp_docs_has_docs() ) :
+				bp_docs_the_doc();
+				$doc_id = get_the_ID();
+		?>
+			<tr<?php bp_docs_doc_row_classes( $doc_id ); ?>>
 				<?php if ( bp_docs_enable_attachments() ) : ?>
 					<td class="attachment-clip-cell">
 						<?php bp_docs_attachment_icon() ?>
@@ -108,7 +111,7 @@
 				<?php endif ?>
 
 				<td class="title-cell">
-					<?php bp_docs_genericon( 'document', get_the_ID() ); ?><a href="<?php bp_docs_doc_link() ?>"><?php the_title() ?></a> <?php bp_docs_doc_trash_notice(); ?>
+					<?php bp_docs_genericon( 'document', $doc_id ); ?><a href="<?php bp_docs_doc_link() ?>"><?php the_title() ?></a> <?php bp_docs_doc_trash_notice(); ?>
 
 					<?php if ( bp_docs_get_excerpt_length() ) : ?>
 						<div class="doc-excerpt">
@@ -122,7 +125,7 @@
 						<?php bp_docs_doc_action_links() ?>
 					</div>
 
-					<div class="bp-docs-attachment-drawer" id="bp-docs-attachment-drawer-<?php echo get_the_ID() ?>">
+					<div class="bp-docs-attachment-drawer" id="bp-docs-attachment-drawer-<?php echo $doc_id ?>">
 						<?php bp_docs_doc_attachment_drawer() ?>
 					</div>
 				</td>
