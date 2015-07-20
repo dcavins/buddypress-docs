@@ -24,7 +24,14 @@
 
 		<h3><?php _e( 'Docs Directory', 'bp-docs' ); ?></h3>
 
-		<?php include( bp_docs_locate_template( 'docs-loop.php' ) ) ?>
+		<?php
+		if ( apply_filters( 'bp_docs_use_legacy_directory_template', false ) ) {
+			$template = 'legacy/docs-loop.php';
+		} else {
+			$template = 'docs-loop.php';
+		}
+		include( bp_docs_locate_template( $template ) );
+		?>
 
 		<?php do_action( 'bp_after_directory_docs' ); ?>
 

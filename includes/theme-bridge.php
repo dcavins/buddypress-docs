@@ -215,7 +215,11 @@ class BP_Docs_Theme_Compat {
 	 * @since 1.3
 	 */
 	public function directory_content() {
-		bp_buffer_template_part( 'docs/docs-loop' );
+		if ( apply_filters( 'bp_docs_use_legacy_directory_template', false ) ) {
+			bp_buffer_template_part( 'docs/legacy/docs-loop' );
+		} else {
+			bp_buffer_template_part( 'docs/docs-loop' );
+		}
 	}
 
 	/** Single ****************************************************************/

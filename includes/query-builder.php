@@ -343,7 +343,11 @@ class BP_Docs_Query {
 				break;
 			case 'list' :
 
-				$template = 'docs-loop.php';
+				if ( apply_filters( 'bp_docs_use_legacy_directory_template', false ) ) {
+					$template = 'legacy/docs-loop.php';
+				} else {
+					$template = 'docs-loop.php';
+				}
 				break;
 			case 'category' :
 				// Check to make sure the category exists
