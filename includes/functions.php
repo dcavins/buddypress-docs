@@ -430,7 +430,7 @@ function bp_docs_is_docs_component() {
  *        keys have values. 'raw' returns results as stored in the database.
  * @return array
  */
-function bp_docs_get_doc_settings( $doc_id = 0, $type = 'default' ) {
+function bp_docs_get_doc_settings( $doc_id = 0, $type = 'default', $group_id = 0 ) {
 	$doc_settings = array();
 
 	$q = get_queried_object();
@@ -443,23 +443,25 @@ function bp_docs_get_doc_settings( $doc_id = 0, $type = 'default' ) {
 		$saved_settings = array();
 	}
 
-	$default_settings = array(
+	$default_settings = apply_filters( 'bp_docs_get_doc_settings_default_settings', array(
 		'read'          => 'anyone',
 		'edit'          => 'loggedin',
 		'read_comments' => 'anyone',
 		'post_comments' => 'anyone',
 		'view_history'  => 'anyone',
 		'manage'        => 'creator',
-	);
+	), $saved_settings, $doc_id, $group_id );
 
 	if ( 'raw' !== $type ) {
 		// Empty string settings can slip through sometimes
 		$saved_settings = array_filter( $saved_settings );
 
 		$doc_settings = wp_parse_args( $saved_settings, $default_settings );
+	} else {
+		$doc_settings = $saved_settings;
 	}
 
-	return apply_filters( 'bp_docs_get_doc_settings', $doc_settings, $doc_id, $default_settings );
+	return apply_filters( 'bp_docs_get_doc_settings', $doc_settings, $doc_id, $default_settings, $saved_settings, $group_id );
 }
 
 function bp_docs_define_tiny_mce() {

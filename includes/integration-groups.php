@@ -91,6 +91,9 @@ class BP_Docs_Groups_Integration {
 
 		// When object terms are set, delete the transient
 		add_action( 'set_object_terms', array( &$this, 'delete_transient' ), 10, 4 );
+
+		add_filter( 'bp_docs_get_doc_settings_default_settings', array( $this, 'filter_doc_settings_defaults' ), 10, 4 );
+
 	}
 
 	/**
@@ -951,7 +954,66 @@ class BP_Docs_Groups_Integration {
 			delete_transient( 'associated_groups-' . $object_id );
 		}
 	}
-}
+
+
+	/**
+	 * Filter defaults based on the group status, if the doc is in a group.
+	 *
+	 * @since 1.8.8
+	 *
+	 * @param array $default_settings The defaults used in calculating the settings.
+	 * @param array $saved_settings   Any saved settings for this doc.
+	 * @param array $doc_id           The title string passed by bp_page_title.
+	 * @param array $group_id         The group that this doc is associated with.
+	 *
+	 * @return array $doc_settings array.
+	 */
+	public function filter_doc_settings_defaults( $default_settings, $saved_settings, $doc_id, $group_id ) {
+		// Being associated with a group may affect what reasonable defaults are.
+
+		if ( ! empty( $group_id ) ) {
+			$towrite = PHP_EOL . 'default_settings: ' . print_r( $default_settings, TRUE );
+			$towrite .= PHP_EOL . 'saved_settings: ' . print_r( $saved_settings, TRUE );
+			$towrite .= PHP_EOL . 'doc_id: ' . print_r( $doc_id, TRUE );
+			$towrite .= PHP_EOL . 'group_id: ' . print_r( $group_id, TRUE );
+			$fp = fopen('bp_docs_default_settings.txt', 'a');
+			fwrite($fp, $towrite);
+			fclose($fp);
+
+			// For public groups, we leave the defaults pretty much intact.
+
+			// For private or hidden groups, we crank everything down to "member" for defaults.
+			$group_status = bp_get_group_status( groups_get_group( array( 'group_id' => $group_id ) ) );
+
+			switch ( $group_status ) {
+				case 'private':
+				case 'hidden':
+					$default_settings = array(
+									'read'          => 'group-members',
+									'edit'          => 'group-members',
+									'read_comments' => 'group-members',
+									'post_comments' => 'group-members',
+									'view_history'  => 'group-members',
+									'manage'        => 'group-members',
+								);
+					break;
+				default:
+					$default_settings = array(
+								'read'          => 'anyone',
+								'edit'          => 'group-members',
+								'read_comments' => 'anyone',
+								'post_comments' => 'anyone',
+								'view_history'  => 'anyone',
+								'manage'        => 'creator',
+							);
+					break;
+			}
+		}
+
+
+		return $default_settings;
+	}
+} // End Class
 
 /**
  * Implementation of BP_Group_Extension
