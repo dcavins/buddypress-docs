@@ -391,6 +391,17 @@ class BP_Docs {
 		require_once( BP_DOCS_INCLUDES_PATH . 'addon-folders.php' );
 		$this->folders = new BP_Docs_Folders();
 
+		// Load Akismet support if Akismet is configured.
+		$akismet_key = bp_get_option( 'wordpress_api_key' );
+		if ( defined( 'AKISMET_VERSION' ) && class_exists( 'Akismet' ) && ( ! empty( $akismet_key ) || defined( 'WPCOM_API_KEY' ) ) && apply_filters( 'bp_docs_use_akismet', bp_is_akismet_active() ) ) {
+			require_once( BP_DOCS_INCLUDES_PATH . 'addon-akismet.php' );
+			$this->akismet = new BP_Docs_Akismet();
+		}
+
+		// Load the Moderation addon
+		require_once( BP_DOCS_INCLUDES_PATH . 'addon-moderation.php' );
+		$this->moderation = new BP_Docs_Moderation();
+
 		do_action( 'bp_docs_load_doc_extras' );
 	}
 
@@ -509,7 +520,7 @@ class BP_Docs {
 			$posts_query->is_404 = false;
 		}
 
-		// For single Doc views, allow access to 'deleted' items
+		// For single Doc views, allow access to 'deleted' or 'pending' items
 		// that the current user is the admin of
 		if ( $posts_query->is_single && bp_docs_get_post_type_name() === $posts_query->get( 'post_type' ) ) {
 
@@ -525,15 +536,19 @@ class BP_Docs {
 
 			// Post author or mod can visit it
 			if ( $author_id && ( $author_id == get_current_user_id() || current_user_can( 'bp_moderate' ) ) ) {
-				$posts_query->set( 'post_status', array( 'publish', 'trash' ) );
+				$posts_query->set( 'post_status', array( 'publish', 'trash', 'pending' ) );
 
 				// Make the 'trash' post status public
-				add_filter( 'posts_request', array( $this, 'make_trash_public' ) );
+				add_filter( 'posts_request', array( $this, 'make_post_statuses_public' ) );
 
 				// ... and undo that when we're done
-				add_filter( 'the_posts', array( $this, 'remove_make_trash_public' ) );
+				add_filter( 'the_posts', array( $this, 'remove_make_post_statuses_public' ) );
 			}
 		}
+	// 		$towrite = PHP_EOL . 'parse_query outgoing: ' . print_r( $posts_query, TRUE );
+	// $fp = fopen('bp-docs-akismet.txt', 'a');
+	// fwrite($fp, $towrite);
+	// fclose($fp);
 	}
 
 	/**
@@ -549,9 +564,10 @@ class BP_Docs {
 	 *
 	 * @param $request Passthrough.
 	 */
-	public function make_trash_public( $request ) {
+	public function make_post_statuses_public( $request ) {
 		global $wp_post_statuses;
 		$wp_post_statuses['trash']->public = true;
+		$wp_post_statuses['pending']->public = true;
 		return $request;
 	}
 
@@ -562,9 +578,10 @@ class BP_Docs {
 	 *
 	 * @param $posts Passthrough.
 	 */
-	public function remove_make_trash_public( $posts ) {
+	public function remove_make_post_statuses_public( $posts ) {
 		global $wp_post_statuses;
 		$wp_post_statuses['trash']->public = false;
+		$wp_post_statuses['pending']->public = false;
 		return $posts;
 	}
 
