@@ -23,7 +23,7 @@ class BP_Docs_Akismet {
 	 */
 	public function setup_hooks() {
 		// Check docs against the Akismet service.
-		add_action( 'bp_docs_before_save', array( $this, 'check_for_spam'), 10, 3 );
+		add_filter( 'bp_docs_args_before_save', array( $this, 'check_for_spam'), 10, 3 );
 	}
 
 	/**
@@ -61,7 +61,7 @@ class BP_Docs_Akismet {
 			do_action( 'bp_docs_akismet_spam_caught', $save_args, $akismet_response, $passed_args['author_id'] );
 
 			// Set the post status as "pending" if it isn't already.
-			$save_args['post_status'] = 'pending';
+			$save_args['post_status'] = 'bp_docs_pending';
 
 			// Add a post meta that this was flagged as spam.
 			// add_post_meta( $doc_id, '_bp_docs_akismet_reported_spam', date("Y-m-d H:i:s") );

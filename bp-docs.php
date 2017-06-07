@@ -536,7 +536,7 @@ class BP_Docs {
 
 			// Post author or mod can visit it
 			if ( $author_id && ( $author_id == get_current_user_id() || current_user_can( 'bp_moderate' ) ) ) {
-				$posts_query->set( 'post_status', array( 'publish', 'trash', 'pending' ) );
+				$posts_query->set( 'post_status', array( 'publish', 'trash', 'bp_docs_pending' ) );
 
 				// Make the 'trash' post status public
 				add_filter( 'posts_request', array( $this, 'make_post_statuses_public' ) );
@@ -545,10 +545,6 @@ class BP_Docs {
 				add_filter( 'the_posts', array( $this, 'remove_make_post_statuses_public' ) );
 			}
 		}
-	// 		$towrite = PHP_EOL . 'parse_query outgoing: ' . print_r( $posts_query, TRUE );
-	// $fp = fopen('bp-docs-akismet.txt', 'a');
-	// fwrite($fp, $towrite);
-	// fclose($fp);
 	}
 
 	/**
@@ -567,7 +563,7 @@ class BP_Docs {
 	public function make_post_statuses_public( $request ) {
 		global $wp_post_statuses;
 		$wp_post_statuses['trash']->public = true;
-		$wp_post_statuses['pending']->public = true;
+		$wp_post_statuses['bp_docs_pending']->public = true;
 		return $request;
 	}
 
@@ -581,7 +577,7 @@ class BP_Docs {
 	public function remove_make_post_statuses_public( $posts ) {
 		global $wp_post_statuses;
 		$wp_post_statuses['trash']->public = false;
-		$wp_post_statuses['pending']->public = false;
+		$wp_post_statuses['bp_docs_pending']->public = false;
 		return $posts;
 	}
 

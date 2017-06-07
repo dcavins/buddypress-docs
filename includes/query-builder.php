@@ -229,7 +229,7 @@ class BP_Docs_Query {
 			// If this is the user's "started by me" library, we'll include trashed and pending posts
 			// Any edit to a trashed post restores it to status 'publish'
 			if ( ! empty( $this->query_args['author_id'] ) && $this->query_args['author_id'] == get_current_user_id()  ) {
-				$wp_query_args['post_status'] = array( 'publish', 'trash', 'pending' );
+				$wp_query_args['post_status'] = array( 'publish', 'trash', 'bp_docs_pending' );
 			}
 
 			// If an edited_by_id param has been passed, get a set
@@ -530,8 +530,8 @@ class BP_Docs_Query {
 				// Save pre-update post data, for comparison by callbacks.
 				$this->previous_revision = get_post( $args['doc_id'] );
 				// If this post is "pending," leave it pending.
-				if ( $this->previous_revision->post_status == 'pending' ) {
-					$r['post_status'] = 'pending';
+				if ( $this->previous_revision->post_status == 'bp_docs_pending' ) {
+					$r['post_status'] = 'bp_docs_pending';
 				}
 			}
 
@@ -545,7 +545,7 @@ class BP_Docs_Query {
 			 * @param array  $args The passed and filtered parameters for the doc
 			 *                     about to be saved.
 			 */
-			do_action( 'bp_docs_before_save', $r, $this, $args );
+			$r = apply_filters( 'bp_docs_args_before_save', $r, $this, $args );
 
 			// Insert or update the post.
 			$this->doc_id = wp_insert_post( $r );

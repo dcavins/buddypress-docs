@@ -2301,7 +2301,7 @@ function bp_docs_doc_row_classes() {
 	$status = get_post_status( get_the_ID() );
 	if ( 'trash' == $status ) {
 		$classes[] = 'bp-doc-trashed-doc';
-	} elseif ( 'pending' == $status ) {
+	} elseif ( 'bp_docs_pending' == $status ) {
 		$classes[] = 'bp-doc-pending-doc';
 	}
 
@@ -2323,7 +2323,7 @@ function bp_docs_doc_trash_notice() {
 	$status = get_post_status( get_the_ID() );
 	if ( 'trash' == $status ) {
 		echo ' <span title="' . __( 'This Doc is in the Trash', 'buddypress-docs' ) . '" class="bp-docs-trashed-doc-notice">' . __( 'Trash', 'buddypress-docs' ) . '</span>';
-	} elseif ( 'pending' == $status  ) {
+	} elseif ( 'bp_docs_pending' == $status  ) {
 		echo ' <span title="' . __( 'This Doc is awaiting moderation', 'buddypress-docs' ) . '" class="bp-docs-pending-doc-notice">' . __( 'Awaiting Moderation', 'buddypress-docs' ) . '</span>';
 	}
 }
