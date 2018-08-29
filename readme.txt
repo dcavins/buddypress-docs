@@ -33,6 +33,9 @@ This plugin is in active development. For feature requests and bug reports, visi
 
 == Changelog ==
 
+= 2.2.0 =
+* Improved hooks for customizing the Docs group admin/create panel.
+
 = 2.1.4 =
 * Fixed bug that could cause Doc links to be incorrectly generated in some cases where Doc IDs are filtered by another plugin.
 * Fixed bug that could cause empty attachment directories to be incorrectly created in some cases.
