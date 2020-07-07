@@ -432,6 +432,33 @@ function bp_docs_is_docs_component() {
 }
 
 /**
+ * What is the current context?
+ * Is this the global library, a group library,
+ * a user library or the "My Groups" view of the global library?
+ *
+ * @since 2.2.0
+ *
+ * @return string
+ */
+function bp_docs_get_current_context() {
+	$context = '';
+	if ( function_exists( 'bp_is_group' ) && bp_is_group() ) {
+		$context = 'group';
+	} else if ( bp_docs_is_mygroups_directory() ) {
+		$context = 'mygroups';
+	} else if ( bp_is_user() ) {
+		$context = 'user';
+	} else {
+		/*
+		 * This is the fallback because bp_docs_is_global_directory()
+		 * isn't known until pretty late in the loading process.
+		 */
+		$context = 'global';
+	}
+	return apply_filters( 'bp_docs_get_current_context', $context );
+}
+
+/**
  * Get the Doc settings array
  *
  * This will prepopulate many of the required settings, for cases where the settings have not
