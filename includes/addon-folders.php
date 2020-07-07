@@ -1840,12 +1840,16 @@ function bp_docs_get_folder_breadcrumbs( $doc = null ) {
  */
 function bp_docs_create_new_folder_markup( $args = array() ) {
 	$default_group_id = null;
+	$default_selection = null;
 	if ( bp_is_active( 'groups' ) && bp_is_group() ) {
-		$default_group_id = bp_get_current_group_id();
+		$default_group_id  = bp_get_current_group_id();
+		$default_selection = $default_group_id;
+	} else if ( bp_is_user() ) {
+		$default_selection = 'me';
 	}
 
 	$r = wp_parse_args( $args, array(
-		'selected' => $default_group_id,
+		'selected' => $default_selection,
 		'group_id' => $default_group_id,
 		'folder_type_name' => 'new-folder-type',
 		'folder_type_id' => 'new-folder-type',
