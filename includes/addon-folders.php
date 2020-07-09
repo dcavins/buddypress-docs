@@ -222,9 +222,9 @@ function bp_docs_enable_folders() {
  * @return bool
  */
 function bp_docs_enable_folders_for_current_context() {
-	// Enabled only in groups by default. Enable elsewhere only at your own risk.
+
 	$context = bp_docs_get_current_context();
-	$enable  = bp_docs_get_folder_setting( $context );
+	$enable  = bp_docs_get_folders_enabled_for_context( $context );
 
 	/**
 	 * Filters whether folders should be enabled in the current interface.
@@ -238,45 +238,43 @@ function bp_docs_enable_folders_for_current_context() {
 }
 
 /**
- * Should folders be enabled in a particular context?
+ * Are folders enabled in a particular context?
  *
  * @since 2.2.0
  *
  * @param string $context Context to check.
- *                        Possible values: 'group', 'user', 'global' or 'any'
+ *                        Possible values: 'group', 'user', 'global', or 'none'
  * @return bool Whether folders are enabled for this context.
  */
-function bp_docs_get_folder_setting( $context ) {
+function bp_docs_get_folders_enabled_for_context( $context ) {
+	return bp_docs_get_folders_setting() === $context;
+}
+
+/**
+ * Get the folders option setting.
+ *
+ * @since 2.2.0
+ *
+ * @return string Saved setting.
+ */
+function bp_docs_get_folders_setting() {
 	$option = bp_get_option( 'bp-docs-enable-folders' );
-	/*
-	 * Fill in missing contexts with default values.
-	 * This is intended to cover sites that haven't updated settings yet,
-	 * but could also handle new contexts, if added.
-	 */
-	$parsed = wp_parse_args( $option, array(
-		'group'  => 1,
-		'user'   => 0,
-		'global' => 0
-	));
-	$enabled = false;
-	switch ( $context ) {
-		case 'group':
-		case 'user':
-		case 'global':
-			if ( ! empty( $parsed[$context] ) ) {
-				$enabled = true;
-			}
-			break;
-		case 'any':
-			foreach ( $parsed as $key => $value ) {
-				if ( ! empty( $value ) ) {
-					$enabled = true;
-					break;
-				}
-			}
-			break;
+
+	// Clean value
+	if ( ! in_array( $option, array( 'group', 'user', 'global', 'none' ), true ) ) {
+		$option = '';
 	}
-	return $enabled;
+
+	// Provide defaults if not set.
+	if ( empty( $option ) ) {
+		if ( bp_is_active( 'groups' ) ) {
+			$option = 'group';
+		} else {
+			$option = 'none';
+		}
+	}
+
+	return $option;
 }
 
 /**
