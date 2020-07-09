@@ -113,7 +113,10 @@
 	 * if a group is selected.
 	 */
 	function update_folder_metabox_display() {
-		if ( BP_Docs_Folders.force_metabox || ( $( '#associated_group_id' ).length && $( '#associated_group_id' ).val().length ) ) {
+		if ( BP_Docs_Folders.force_metabox
+			|| ( BP_Docs_Folders.folders_enabled_group && ( $( '#associated_group_id' ).length && $( '#associated_group_id' ).val().length ) )
+			|| ( ( BP_Docs_Folders.folders_enabled_user || BP_Docs_Folders.folders_enabled_global ) && ! ( $( '#associated_group_id' ).length && $( '#associated_group_id' ).val().length ) )
+			) {
 			$( '#doc-folders' ).show();
 		} else {
 			$( '#doc-folders' ).hide();

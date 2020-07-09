@@ -193,6 +193,9 @@ class BP_Docs_Folders {
 			'folders_tab_label' => _x( 'Folders', 'Doc edit tab name', 'buddypress-docs' ),
 			'folders_tab_label_groups' => _x( 'Group Folders', 'Doc edit tab name', 'buddypress-docs' ),
 			'force_metabox' => $force_folders_metabox,
+			'folders_enabled_group' => bp_docs_get_folders_enabled_for_context( 'group' ),
+			'folders_enabled_user' => bp_docs_get_folders_enabled_for_context( 'user' ),
+			'folders_enabled_global' => bp_docs_get_folders_enabled_for_context( 'global' )
 		) );
 	}
 }
