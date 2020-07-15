@@ -246,11 +246,30 @@ function bp_docs_enable_folders_for_current_context() {
  * @since 2.2.0
  *
  * @param string $context Context to check.
- *                        Possible values: 'group', 'user', 'global', or 'none'
+ *                        Possible values: 'group', 'user', 'global', or 'any'
  * @return bool Whether folders are enabled for this context.
  */
 function bp_docs_get_folders_enabled_for_context( $context ) {
-	return bp_docs_get_folders_setting() === $context;
+	$setting = bp_docs_get_folders_setting();
+	$enabled = false;
+	switch ( $context ) {
+		case 'group':
+		case 'user':
+		case 'global':
+			if ( ! empty( $setting[$context] ) ) {
+				$enabled = true;
+			}
+			break;
+		case 'any':
+			foreach ( $setting as $key => $value ) {
+				if ( ! empty( $value ) ) {
+					$enabled = true;
+					break;
+				}
+			}
+			break;
+	}
+	return $enabled;
 }
 
 /**
@@ -258,26 +277,21 @@ function bp_docs_get_folders_enabled_for_context( $context ) {
  *
  * @since 2.2.0
  *
- * @return string Saved setting.
+ * @return array Saved settings.
  */
 function bp_docs_get_folders_setting() {
 	$option = bp_get_option( 'bp-docs-enable-folders' );
 
-	// Clean value
-	if ( ! in_array( $option, array( 'group', 'user', 'global', 'none' ), true ) ) {
-		$option = '';
-	}
-
-	// Provide defaults if not set.
-	if ( empty( $option ) ) {
-		if ( bp_is_active( 'groups' ) ) {
-			$option = 'group';
-		} else {
-			$option = 'none';
-		}
-	}
-
-	return $option;
+	/*
+	 * Fill in missing contexts with default values.
+	 * This is intended to cover sites that haven't updated settings yet,
+	 * but could also handle new contexts, if added.
+	 */
+	return wp_parse_args( $option, array(
+		'group'  => 1,
+		'user'   => 0,
+		'global' => 0
+	) );
 }
 
 /**

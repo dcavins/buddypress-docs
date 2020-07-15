@@ -162,7 +162,9 @@ class BP_Docs_Admin {
 			'bp-docs-settings',
 			'bp-docs-folders'
 		);
-		register_setting( 'bp-docs-settings', 'bp-docs-enable-folders' );
+		register_setting( 'bp-docs-settings', 'bp-docs-enable-folders', array(
+			'sanitize_callback' => array( $this, 'sanitize_folder_setting' ),
+		) );
 	}
 
 	public function general_section() { settings_errors(); }
@@ -249,13 +251,12 @@ class BP_Docs_Admin {
 	public function enable_folders_setting_markup() {
 		?>
 		<fieldset>
-			<legend><?php _e( "In which context should users be able to organize documents into folders?", 'buddypress-docs' ) ?></legend>
+			<legend><?php _e( "In which contexts should users be able to organize documents into folders?", 'buddypress-docs' ) ?></legend>
 			<?php if ( bp_is_active( 'groups' ) ) : ?>
-				<input type="radio" name="bp-docs-enable-folders" id="bp-docs-enable-folders-group" value="group" <?php checked( bp_docs_get_folders_enabled_for_context( 'group' ) ) ?>> <label for="bp-docs-enable-folders-group"><?php _e( "Group Document Libraries", 'buddypress-docs' ) ?></label><br />
+				<input type="checkbox" name="bp-docs-enable-folders[group]" id="bp-docs-enable-folders-group" value="1" <?php checked( bp_docs_get_folders_enabled_for_context( 'group' ) ) ?>> <label for="bp-docs-enable-folders-group"><?php _e( "Group Document Libraries", 'buddypress-docs' ) ?></label> <p class="description"><?php _e( 'Note that Docs that are associated with a group may only be placed in folders associated with that group.', 'buddypress-docs' ) ?></p>
 			<?php endif; ?>
-			<input type="radio" name="bp-docs-enable-folders" id="bp-docs-enable-folders-user" value="user" <?php checked( bp_docs_get_folders_enabled_for_context( 'user' ) ) ?>> <label for="bp-docs-enable-folders-user"><?php _e( "User Document Libraries", 'buddypress-docs' ) ?></label><br />
-			<input type="radio" name="bp-docs-enable-folders" id="bp-docs-enable-folders-global" value="global" <?php checked( bp_docs_get_folders_enabled_for_context( 'global' ) ) ?>> <label for="bp-docs-enable-folders-global"><?php _e( "Site-wide Document Library", 'buddypress-docs' ) ?></label><br />
-			<input type="radio" name="bp-docs-enable-folders" id="bp-docs-enable-folders-none" value="none" <?php checked( bp_docs_get_folders_enabled_for_context( 'none' ) ) ?>> <label for="bp-docs-enable-folders-none"><?php _e( "Do not use folders", 'buddypress-docs' ) ?></label>
+			<input type="checkbox" name="bp-docs-enable-folders[user]" id="bp-docs-enable-folders-user" value="1" <?php checked( bp_docs_get_folders_enabled_for_context( 'user' ) ) ?>> <label for="bp-docs-enable-folders-user"><?php _e( 'User Document Libraries, like &ldquo;Started by Me&rdquo;', 'buddypress-docs' ) ?></label><br />
+			<input type="checkbox" name="bp-docs-enable-folders[global]" id="bp-docs-enable-folders-global" value="1" <?php checked( bp_docs_get_folders_enabled_for_context( 'global' ) ) ?>> <label for="bp-docs-enable-folders-global"><?php _e( "Site-wide Document Library, usually located at <code>/docs/</code>", 'buddypress-docs' ) ?></label>
 		</fieldset>
 		<?php
 	}
@@ -266,6 +267,24 @@ class BP_Docs_Admin {
 		add_settings_error( 'bp-docs-settings', 'bp-docs-settings-saved', __( 'Settings updated.', 'buddypress-docs' ), 'updated' );
 
 		return $value;
+	}
+
+	/**
+	 * Ensure that every context has a set value, so that default settings
+	 * are only used when this setting has not been set.
+	 *
+	 * @since 2.2.0
+	 *
+	 * @param $value array Value to sanitize, array in this case.
+	 * @return $value array
+	 */
+	public function sanitize_folder_setting( $value ) {
+		$value = wp_parse_args( $value, array(
+			'group'  => 0,
+			'user'   => 0,
+			'global' => 0
+		) );
+		return array_map( 'absint', $value );
 	}
 
 	function replace_recent_comments_dashboard_widget() {
