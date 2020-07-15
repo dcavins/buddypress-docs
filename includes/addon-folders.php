@@ -1097,22 +1097,35 @@ function bp_docs_folders_map_meta_caps( $caps, $cap, $user_id, $args ) {
 
 		case 'bp_docs_add_items_to_folders_in_context' :
 			$caps = array( 'do_not_allow' );
+			$context = bp_docs_get_current_context();
+
+			/**
+			 * Can doc be moved in this context?
+			 * Group-associated docs can't be placed in global or user folders.
+			 */
+			if ( in_array( $context, array( 'user', 'global' ), true ) ) {
+				$doc = bp_docs_get_doc_for_caps( $args );
+
+				if ( ! empty( $doc ) && bp_docs_get_associated_group_id( $doc->ID, $doc ) ) {
+					return $caps;
+				}
+			}
 
 			if ( user_can( $user_id, 'bp_moderate' ) ) {
 				$caps = array( 'exist' );
 
 			// Group
-			} else if ( function_exists( 'bp_is_group' ) && bp_is_group() ) {
+			} else if ( 'group' === $context ) {
 				if ( groups_is_user_member( $user_id, bp_get_current_group_id() ) ) {
 					$caps = array( 'exist' );
 				}
 			// User
-			} else if ( bp_is_user() ) {
+			} else if ( 'user' === $context ) {
 				if ( bp_displayed_user_id() == $user_id ) {
 					$caps = array( 'exist' );
 				}
 			// Global
-			} else if ( bp_docs_is_global_directory() ) {
+			} else if ( 'user' === $context ) {
 				if ( is_user_logged_in() ) {
 					$caps = array( 'exist' );
 				}
@@ -2321,7 +2334,7 @@ function bp_docs_is_directory_view_filtered_by_folder( $is_filtered, $exclude ) 
  * @return array $classes
  */
 function bp_docs_item_add_draggable_class( $classes ) {
-	if ( current_user_can( 'bp_docs_edit', get_the_ID() ) && current_user_can( 'bp_docs_add_items_to_folders_in_context' ) ) {
+	if ( current_user_can( 'bp_docs_edit', get_the_ID() ) && current_user_can( 'bp_docs_add_items_to_folders_in_context', get_the_ID() ) ) {
 		$classes[] = 'doc-in-folder';
 	}
 	return $classes;
