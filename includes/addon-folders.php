@@ -961,20 +961,49 @@ function bp_docs_get_folders( $args = array() ) {
  * @return array
  */
 function bp_docs_folder_tax_query( $tax_query, $bp_docs_query ) {
-	// Folder 0 means: find Docs not in a folder
+	// Folder 0 means: find Docs not in a folder that belongs to the current context.
 	if ( 0 === $bp_docs_query->query_args['folder_id'] && ! bp_docs_is_directory_view_filtered() ) {
-		// Get all folders
-		// @todo Is there a better way? Not in WP_Query I don't think
-		$folder_terms = get_terms( 'bp_docs_doc_in_folder', array(
-			'fields' => 'ids',
-		) );
+		$current_context = bp_docs_get_current_context();
+		switch ( $current_context ) {
+			case 'user':
+			case 'group':
+			case 'global':
+				// Get the ID of every folder that could be displayed in this context.
+				$folder_ids = bp_docs_get_folders( array(
+					'parent_id' => null,
+					'fields' => 'ids',
+				) );
 
-		$tax_query[] = array(
-			'taxonomy' => 'bp_docs_doc_in_folder',
-			'field'    => 'term_id',
-			'terms'    => $folder_terms,
-			'operator' => 'NOT IN',
-		);
+				if ( $folder_ids ) {
+					$exclude_slugs = array();
+					foreach ( $folder_ids as $folder_id ) {
+						$exclude_slugs[] = bp_docs_get_folder_term_slug( $folder_id );
+					}
+					$tax_query[] = array(
+						'taxonomy' => 'bp_docs_doc_in_folder',
+						'terms'    => $exclude_slugs,
+						'field'    => 'slug',
+						'operator' => 'NOT IN',
+					);
+				}
+				break;
+
+			default:
+				// Get all folders
+				// @todo Is there a better way? Not in WP_Query I don't think
+				$folder_terms = get_terms( 'bp_docs_doc_in_folder', array(
+					'fields' => 'ids',
+				) );
+
+				$tax_query[] = array(
+					'taxonomy' => 'bp_docs_doc_in_folder',
+					'field'    => 'term_id',
+					'terms'    => $folder_terms,
+					'operator' => 'NOT IN',
+				);
+				break;
+		}
+
 
 	// Find Docs in the following folders
 	} else if ( ! empty( $bp_docs_query->query_args['folder_id'] ) ) {
