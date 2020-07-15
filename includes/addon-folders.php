@@ -808,6 +808,7 @@ function bp_docs_get_folders( $args = array() ) {
 		'parent_id'         => $parent_id,
 		'include'           => null,
 		'search_terms'      => $search_terms,
+		'fields'            => 'all',
 	);
 
 	if ( function_exists( 'bp_parse_args' ) ) {
@@ -835,6 +836,7 @@ function bp_docs_get_folders( $args = array() ) {
 		'order' => $order,
 		'posts_per_page' => '-1',
 		'tax_query' => array(),
+		'fields' => $r['fields']
 	);
 
 	// @todo support for multiple items
