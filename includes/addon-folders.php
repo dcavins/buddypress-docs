@@ -1682,9 +1682,8 @@ function bp_docs_folder_selector( $args = array() ) {
 
 	$types = array();
 
-	// Include Global folders either when force_global is true or there
-	// are no others to show
-	if ( $r['force_global'] || ( empty( $r['group_id'] ) && empty( $r['user_id'] ) ) ) {
+	// Include Global folders either when force_global is true or global folders are enabled.
+	if ( $r['force_global'] || ( empty( $r['group_id'] ) && bp_docs_get_folders_enabled_for_context( 'global' ) ) ) {
 		$types['global'] = array(
 			'label' => __( 'Global', 'buddypress-docs' ),
 			'folders' => bp_docs_get_folders( array(
@@ -1696,7 +1695,7 @@ function bp_docs_folder_selector( $args = array() ) {
 		);
 	}
 
-	if ( ! empty( $r['group_id'] ) ) {
+	if ( ! empty( $r['group_id'] ) && bp_docs_get_folders_enabled_for_context( 'group' ) ) {
 		$group = groups_get_group( array(
 			'group_id' => $r['group_id'],
 		) );
@@ -1713,7 +1712,7 @@ function bp_docs_folder_selector( $args = array() ) {
 		}
 	}
 
-	if ( ! empty( $r['user_id'] ) ) {
+	if ( ! empty( $r['user_id'] ) && empty( $r['group_id'] ) && bp_docs_get_folders_enabled_for_context( 'user' ) ) {
 		$user = new WP_User( $r['user_id'] );
 
 		if ( ! empty( $user->ID ) ) {
@@ -1896,16 +1895,19 @@ function bp_docs_get_folder_breadcrumbs( $doc = null ) {
 function bp_docs_create_new_folder_markup( $args = array() ) {
 	$default_group_id = null;
 	$default_selection = null;
+	$default_user_id = bp_loggedin_user_id();
 	if ( bp_is_active( 'groups' ) && bp_is_group() ) {
 		$default_group_id  = bp_get_current_group_id();
 		$default_selection = $default_group_id;
 	} else if ( bp_is_user() ) {
 		$default_selection = 'me';
+		$default_user_id = bp_displayed_user_id();
 	}
 
 	$r = wp_parse_args( $args, array(
 		'selected' => $default_selection,
 		'group_id' => $default_group_id,
+		'user_id' => $default_user_id,
 		'folder_type_name' => 'new-folder-type',
 		'folder_type_id' => 'new-folder-type',
 		'folder_type_include_all_groups' => false,
@@ -1937,6 +1939,7 @@ function bp_docs_create_new_folder_markup( $args = array() ) {
 		'class'    => 'folder-parent',
 		'selected' => isset( $_GET['folder'] ) ? intval( $_GET['folder'] ) : false,
 		'group_id' => $r['group_id'],
+		'user_id'  =>$r['user_id'],
 	) ) ?>
 
 	<div style="clear:both"></div>
@@ -1952,6 +1955,7 @@ function bp_docs_folders_meta_box() {
 
 	$doc_id = get_the_ID();
 	$associated_group_id = bp_is_active( 'groups' ) ? bp_docs_get_associated_group_id( $doc_id ) : 0;
+	$user_id = ! empty( bp_loggedin_user_id() ) ? bp_loggedin_user_id() : null;
 
 	if ( ! $associated_group_id && isset( $_GET['group'] ) ) {
 		$group_id = BP_Groups_Group::get_id_from_slug( urldecode( $_GET['group'] ) );
@@ -1992,6 +1996,7 @@ function bp_docs_folders_meta_box() {
 										'name'     => 'bp-docs-folder',
 										'id'       => 'bp-docs-folder',
 										'group_id' => $associated_group_id,
+										'user_id'  => $user_id,
 										'selected' => $folder_id,
 									) ) ?>
 								</div>
