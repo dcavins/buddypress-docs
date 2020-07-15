@@ -1092,7 +1092,11 @@ function bp_docs_folders_map_meta_caps( $caps, $cap, $user_id, $args ) {
 			break;
 
 		case 'bp_docs_change_folder_type' :
-			$caps = array( 'bp_moderate' );
+			if ( is_user_logged_in() && ( bp_docs_is_doc_create() || bp_docs_is_doc_edit() ) ) {
+				$caps = array( 'exist' );
+			} else {
+				$caps = array( 'bp_moderate' );
+			}
 			break;
 
 		case 'bp_docs_add_items_to_folders_in_context' :
@@ -1553,11 +1557,8 @@ function bp_docs_update_folder_type_for_group_cb() {
 		die( '-1' );
 	}
 
-	$group_id = intval( $_POST['group_id'] );
-
 	bp_docs_folder_type_selector( array(
-		'selected' => $group_id,
-		'group_id' => $group_id,
+		'selected' => is_numeric( $_POST['group_id'] ) ? intval( $_POST['group_id'] ) : $_POST['group_id'],
 		'include_all_groups' => false,
 	) );
 
@@ -1834,8 +1835,12 @@ function bp_docs_folder_type_selector( $args = array() ) {
 	}
 
 	$type_selector  = '<select name="' . esc_attr( $r['name'] ) . '" id="' . esc_attr( $r['id'] ) . '" class="folder-type">';
-	$type_selector .=   '<option ' . selected( $r['selected'], 'global', false ) . ' value="global">' . __( 'Global', 'buddypress-docs' ) . '</option>';
-	$type_selector .=   '<option ' . selected( $r['selected'], 'me', false ) . ' value="me">' . __( 'Personal', 'buddypress-docs' ) . '</option>';
+
+	// Only add the "global" and "personal" options if the doc isn't associated with a group.
+	if ( ! $group_id ) {
+		$type_selector .=   '<option ' . selected( $r['selected'], 'global', false ) . ' value="global">' . __( 'Global', 'buddypress-docs' ) . '</option>';
+		$type_selector .=   '<option ' . selected( $r['selected'], 'me', false ) . ' value="me">' . __( 'Personal', 'buddypress-docs' ) . '</option>';
+	}
 
 	if ( isset( $group_selector ) ) {
 		$type_selector .=   '<optgroup label="' . __( 'Group-specific', 'buddypress-docs' ) . '">';
@@ -1981,7 +1986,7 @@ function bp_docs_create_new_folder_markup( $args = array() ) {
 		'class'    => 'folder-parent',
 		'selected' => isset( $_GET['folder'] ) ? intval( $_GET['folder'] ) : false,
 		'group_id' => $r['group_id'],
-		'user_id'  =>$r['user_id'],
+		'user_id'  => $r['user_id'],
 	) ) ?>
 
 	<div style="clear:both"></div>
