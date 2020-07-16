@@ -1953,3 +1953,34 @@ function bp_docs_groups_map_meta_caps( $caps, $cap, $user_id, $args ) {
 	return $caps;
 }
 add_filter( 'bp_docs_map_meta_caps', 'bp_docs_groups_map_meta_caps', 10, 4 );
+
+/**
+ * Group-specific meta cap mapping that runs after the folder filter has run.
+ *
+ * Some bp_docs_ capabilities require referencing group-specific info. We do
+ * this here.
+ *
+ * @since 2.2
+ */
+function bp_docs_groups_map_meta_caps_after_folders( $caps, $cap, $user_id, $args ) {
+	switch ( $cap ) {
+		case 'bp_docs_add_items_to_folders_in_context' :
+			$context = bp_docs_get_current_context();
+
+			/**
+			 * Can doc be moved in this context?
+			 * Group-associated docs can't be placed in global or user folders.
+			 */
+			if ( in_array( $context, array( 'user', 'global' ), true ) ) {
+				$doc = bp_docs_get_doc_for_caps( $args );
+
+				if ( ! empty( $doc ) && bp_docs_get_associated_group_id( $doc->ID, $doc ) ) {
+					return array( 'do_not_allow' );
+				}
+			}
+			break;
+	}
+
+	return $caps;
+}
+add_filter( 'bp_docs_map_meta_caps', 'bp_docs_groups_map_meta_caps_after_folders', 12, 4 );

@@ -1117,18 +1117,6 @@ function bp_docs_folders_map_meta_caps( $caps, $cap, $user_id, $args ) {
 			$caps = array( 'do_not_allow' );
 			$context = bp_docs_get_current_context();
 
-			/**
-			 * Can doc be moved in this context?
-			 * Group-associated docs can't be placed in global or user folders.
-			 */
-			if ( in_array( $context, array( 'user', 'global' ), true ) ) {
-				$doc = bp_docs_get_doc_for_caps( $args );
-
-				if ( ! empty( $doc ) && bp_docs_get_associated_group_id( $doc->ID, $doc ) ) {
-					return $caps;
-				}
-			}
-
 			if ( user_can( $user_id, 'bp_moderate' ) ) {
 				$caps = array( 'exist' );
 
