@@ -1,6 +1,7 @@
 'use strict';
 module.exports = function(grunt) {
 
+	const sass = require('node-sass');
 	// load all grunt tasks matching the `grunt-*` pattern
 	require('load-grunt-tasks')(grunt);
 
@@ -24,7 +25,8 @@ module.exports = function(grunt) {
 
 		sass: {
 			options: {
-				sourceMap: true
+				sourceMap: true,
+				implementation: sass,
 			},
 			dist: {
 				files: [{
